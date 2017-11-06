@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 10
+#define INTERVAL 5
 
 #include <rf430frl152h.h>
 
@@ -15,7 +15,7 @@ void DeviceInit(void);
 
 unsigned int ADC_Value = 0;
 unsigned char secondCTR = 0;
-//volatile int ADC_Volts = 0;
+volatile unsigned char tempC = 0;
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -36,13 +36,13 @@ void main(){
 }
 
 void DeviceInit(void){
-		P1SEL0 = 0xF0; //keep JTAG
-		P1SEL1 = 0xF0; //keep JTAG
-//	P1SEL0 = 0x00; //no JTAG
-//	P1SEL1 = 0x00; //no JTAG
+	P1SEL0 = 0xF0; //keep JTAG
+	P1SEL1 = 0xF0; //keep JTAG
+	//	P1SEL0 = 0x00; //no JTAG
+	//	P1SEL1 = 0x00; //no JTAG
 
-//	P1DIR |= 0x10;
-//	P1OUT &= ~0x10;
+	//	P1DIR |= 0x10;
+	//	P1OUT |= 0x10;
 
 	CCSCTL0 = CCSKEY;                        // Unlock CCS
 	CCSCTL1 = 0;                             // do not half the clock speed
@@ -57,7 +57,7 @@ void DeviceInit(void){
 	P1DIR &= ~0xEF;
 	P1REN = 0;
 	SD14CTL0 = SD14EN + VIRTGND + SD14IE + SD14SGL;
-	SD14CTL1 = SD14UNI + SD14INCH_2 + SD14RBEN0 + SD14RBEN1;
+	SD14CTL1 = SD14UNI + SD14INCH_1;// + SD14RBEN0 + SD14RBEN1;
 }
 
 
@@ -73,17 +73,13 @@ __interrupt void SD_ADC_ISR(void)
 	{
 		SD14CTL0 &= ~SD14IFG;  //clear the data available interrupt
 		ADC_Value =  SD14MEM0; //Read the ADC Data		//sending the raw data to phone
-//		ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
+		tempC = ADC_Value/36 - 168;
 
-		NFC_NDEF_Message[14+2*ndefcount+1] = ADC_Value;
-		NFC_NDEF_Message[14+2*ndefcount] = ADC_Value>>8;
+		NFC_NDEF_Message[14+2*ndefcount+1] = tempC%10+48;
+		NFC_NDEF_Message[14+2*ndefcount] = tempC/10 +48;;
 		NFC_NDEF_Message[5] = 0x0c + ndefcount*2;
 		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
-
 		ndefcount++;
-//		P1OUT ^= 0x10;
-//		__delay_cycles(400);
-//		P1OUT &= ~0x10;
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
 	case SD14IV__OV: //Memory Overflow
@@ -105,10 +101,10 @@ __interrupt void TimerA1_ISR(void)
 	TA0CTL &= ~TAIFG;
 	secondCTR++;
 	if(secondCTR == INTERVAL){
-//		P1OUT ^= 0x10;
-//		__delay_cycles(400);
-//		P1OUT &= ~0x10;
-//		__delay_cycles(400000);
+		//		P1OUT ^= 0x10;
+		//		__delay_cycles(400000);
+		//		P1OUT &= ~0x10;
+		//		__delay_cycles(400000);
 		secondCTR = 0;
 		SD14CTL0 |= SD14SC;
 	}
