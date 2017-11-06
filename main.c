@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 10
+#define INTERVAL 5
 
 #include <rf430frl152h.h>
 
@@ -41,9 +41,6 @@ void DeviceInit(void){
 //	P1SEL0 = 0x00; //no JTAG
 //	P1SEL1 = 0x00; //no JTAG
 
-//	P1DIR |= 0x10;
-//	P1OUT &= ~0x10;
-
 	CCSCTL0 = CCSKEY;                        // Unlock CCS
 	CCSCTL1 = 0;                             // do not half the clock speed
 	CCSCTL4 = SELA_1 + SELM_0 + SELS_0;      // Select VLO for ACLK and select HFCLK/DCO for MCLK, and SMCLK
@@ -54,10 +51,10 @@ void DeviceInit(void){
 	CCSCTL0_H |= 0xFF;                       // Lock CCS
 
 	//setting up adc
-	P1DIR &= ~0xEF;
-	P1REN = 0;
-	SD14CTL0 = SD14EN + VIRTGND + SD14IE + SD14SGL;
-	SD14CTL1 = SD14UNI + SD14INCH_2 + SD14RBEN0 + SD14RBEN1;
+//	P1DIR &= ~0xEF;
+//	P1REN = 0;
+	SD14CTL0 = SD14EN + SD14IE + SD14SGL + VIRTGND;
+	SD14CTL1 = SD14UNI + SD14INCH_3 + SD14RBEN0;
 }
 
 
@@ -81,9 +78,6 @@ __interrupt void SD_ADC_ISR(void)
 		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
 
 		ndefcount++;
-//		P1OUT ^= 0x10;
-//		__delay_cycles(400);
-//		P1OUT &= ~0x10;
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
 	case SD14IV__OV: //Memory Overflow
