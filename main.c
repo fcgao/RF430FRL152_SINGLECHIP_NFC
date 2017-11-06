@@ -15,7 +15,7 @@ void DeviceInit(void);
 
 unsigned int ADC_Value = 0;
 unsigned char secondCTR = 0;
-//volatile int ADC_Volts = 0;
+volatile int ADC_Volts = 0;
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -54,7 +54,8 @@ void DeviceInit(void){
 //	P1DIR &= ~0xEF;
 //	P1REN = 0;
 	SD14CTL0 = SD14EN + SD14IE + SD14SGL + VIRTGND;
-	SD14CTL1 = SD14UNI + SD14INCH_3 + SD14RBEN0;
+//	SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor
+	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor
 }
 
 
