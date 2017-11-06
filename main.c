@@ -15,7 +15,7 @@ void DeviceInit(void);
 
 unsigned int ADC_Value = 0;
 unsigned char secondCTR = 0;
-volatile int ADC_Volts = 0;
+//volatile int ADC_Volts = 0;
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -77,8 +77,8 @@ __interrupt void SD_ADC_ISR(void)
 		NFC_NDEF_Message[14+2*ndefcount] = ADC_Value>>8;
 		NFC_NDEF_Message[5] = 0x0c + ndefcount*2;
 		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
-
 		ndefcount++;
+
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
 	case SD14IV__OV: //Memory Overflow
