@@ -3,7 +3,9 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 5
+#define MAXDATA 119
+
+#define INTERVAL 60
 
 #include <rf430frl152h.h>
 
@@ -77,7 +79,17 @@ __interrupt void SD_ADC_ISR(void)
 		NFC_NDEF_Message[14+2*ndefcount] = ADC_Value>>8;
 		NFC_NDEF_Message[5] = 0x0c + ndefcount*2;
 		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
-		ndefcount++;
+
+		if(ndefcount < MAXDATA){
+			ndefcount++;
+		}else {
+			ndefcount = MAXDATA;
+			for(ADC_Value = 16 ; ADC_Value < 2*ndefcount ; ADC_Value+=2){
+							NFC_NDEF_Message[ADC_Value-2] = NFC_NDEF_Message[ADC_Value];
+							NFC_NDEF_Message[ADC_Value-1] = NFC_NDEF_Message[ADC_Value+1];
+
+			}
+		}
 
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
