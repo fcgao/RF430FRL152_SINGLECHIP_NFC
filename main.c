@@ -3,19 +3,20 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 5
+#define INTERVAL 240
+#define MAXDATA 80
+#define DATAWIDTH 3
 
 #include <rf430frl152h.h>
 
-
 #pragma PERSISTENT (ndefcount)
-unsigned char ndefcount = 0;
+volatile unsigned char ndefcount = 0;
 
 void DeviceInit(void);
 
-unsigned int ADC_Value = 0;
+
 unsigned char secondCTR = 0;
-volatile unsigned char tempC = 0;
+
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -71,15 +72,30 @@ __interrupt void SD_ADC_ISR(void)
 		break;}
 	case SD14IV__RES: //ADC Data available
 	{
+		unsigned char tempC = 0;
+		volatile unsigned int i = 0;
+		unsigned int ADC_Value = 0;
 		SD14CTL0 &= ~SD14IFG;  //clear the data available interrupt
 		ADC_Value =  SD14MEM0; //Read the ADC Data		//sending the raw data to phone
 		tempC = ADC_Value/36 - 168;
 
-		NFC_NDEF_Message[14+2*ndefcount+1] = tempC%10+48;
-		NFC_NDEF_Message[14+2*ndefcount] = tempC/10 +48;;
-		NFC_NDEF_Message[5] = 0x0c + ndefcount*2;
-		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
+
 		ndefcount++;
+
+		if(ndefcount > MAXDATA){
+			ndefcount = MAXDATA;
+			for( i = 14;i<= 14+ MAXDATA*DATAWIDTH- DATAWIDTH;i++){
+				NFC_NDEF_Message[i] = NFC_NDEF_Message[i+DATAWIDTH];
+			}
+		}
+
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount] = tempC/10 +48;
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+1] = tempC%10+48;
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+2] = 0x0D;
+
+		NFC_NDEF_Message[5] = NLEN + ndefcount*DATAWIDTH;
+		NFC_NDEF_Message[8] = PLEN + ndefcount*DATAWIDTH;
+
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
 	case SD14IV__OV: //Memory Overflow

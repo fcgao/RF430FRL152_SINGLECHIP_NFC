@@ -3,6 +3,7 @@
 #include "patch.h"
 #include <string.h>
 
+
 #define FIRMWARE_CONTROL_ADDRESS 	0xF867
 #pragma RETAIN(Firmware_System_Control_Byte);
 #pragma location = FIRMWARE_CONTROL_ADDRESS
@@ -36,7 +37,7 @@ const u16_t PF[48];
 #pragma location = NDEF_START_ADDRESS
 
 
-u08_t NFC_NDEF_Message[104] = {
+u08_t NFC_NDEF_Message[304] = {
 		// Block 0
 		0xE1, 		// NDEF Magic Number
 		0x40, 		// Version Number, read/write access conditions
@@ -45,22 +46,21 @@ u08_t NFC_NDEF_Message[104] = {
 
 		// Block 1
 		0x03,		// NDEF Message present
-		0x0c,		// Length , 22 bytes
+		NLEN,		// Length , 22 bytes
 		0xD1,		// Record header
 		0x01,		// type length
 
 		// Block 2
-		0x08,		// Payload length
+		PLEN,		// Payload length
 		0x54,		// Record Type text)
 		0x02, 		// SOT
 		0x65,		// 'e'
 
 		0x6E,		// 'n'
 
-		0x54,
+		0x54,	//ARRAY INDEX IS 13 HERE
 
 		0x03,		// end of text
-		0x00,		// Empty don't care
 };
 
 void initISO15693(u16_t parameters ){

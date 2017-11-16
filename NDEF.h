@@ -4,6 +4,7 @@
 #ifndef NDEF_H
 #define NDEF_H
 
+
 //*****************************FUNCTION PROTOTYPES********************************/
 void initISO15693(u16_t parameters );
 u16_t BlockLockAPI(u16_t block, u08_t checkLock);
@@ -14,6 +15,8 @@ extern u08_t DS;
 #define FRAM_LOCK_BLOCK_AREA_SIZE  						38
 #define FRAM_LOCK_BLOCKS								0xF840  //Address of ISO15693 lock blocks
 
+#define NLEN 0x0C
+#define PLEN 0x08
 
 #define ROM_EUSCI_SUPPORT_ENABLED       BIT2
 #define EROM_EUSCI_SUPPORT_DISABLED     0
