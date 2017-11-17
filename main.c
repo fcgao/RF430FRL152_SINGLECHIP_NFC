@@ -3,9 +3,9 @@
 #include "patch.h"
 #include "timer.h"
 
-#define MAXDATA 119
-
-#define INTERVAL 60
+#define INTERVAL 240
+#define MAXDATA 80
+#define DATAWIDTH 3
 
 #include <rf430frl152h.h>
 
@@ -15,9 +15,8 @@ unsigned char ndefcount = 0;
 
 void DeviceInit(void);
 
-unsigned int ADC_Value = 0;
 unsigned char secondCTR = 0;
-//volatile int ADC_Volts = 0;
+volatile int ADC_Volts = 0;
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -38,10 +37,10 @@ void main(){
 }
 
 void DeviceInit(void){
-		P1SEL0 = 0xF0; //keep JTAG
-		P1SEL1 = 0xF0; //keep JTAG
-//	P1SEL0 = 0x00; //no JTAG
-//	P1SEL1 = 0x00; //no JTAG
+	P1SEL0 = 0xF0; //keep JTAG
+	P1SEL1 = 0xF0; //keep JTAG
+	//	P1SEL0 = 0x00; //no JTAG
+	//	P1SEL1 = 0x00; //no JTAG
 
 	CCSCTL0 = CCSKEY;                        // Unlock CCS
 	CCSCTL1 = 0;                             // do not half the clock speed
@@ -53,11 +52,11 @@ void DeviceInit(void){
 	CCSCTL0_H |= 0xFF;                       // Lock CCS
 
 	//setting up adc
-//	P1DIR &= ~0xEF;
-//	P1REN = 0;
+	//	P1DIR &= ~0xEF;
+	//	P1REN = 0;
 	SD14CTL0 = SD14EN + SD14IE + SD14SGL + VIRTGND;
-//	SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor
-	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor
+	//SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor	pin 17
+	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor	pin 18
 }
 
 
@@ -71,25 +70,30 @@ __interrupt void SD_ADC_ISR(void)
 		break;}
 	case SD14IV__RES: //ADC Data available
 	{
+		unsigned int ADC_Value = 0;
+		volatile unsigned int i = 0;
+
+
 		SD14CTL0 &= ~SD14IFG;  //clear the data available interrupt
 		ADC_Value =  SD14MEM0; //Read the ADC Data		//sending the raw data to phone
-//		ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
+		ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
 
-		NFC_NDEF_Message[14+2*ndefcount+1] = ADC_Value;
-		NFC_NDEF_Message[14+2*ndefcount] = ADC_Value>>8;
-		NFC_NDEF_Message[5] = 0x0c + ndefcount*2;
-		NFC_NDEF_Message[8] = 0x08 + ndefcount*2;
+		ndefcount++;
 
-		if(ndefcount < MAXDATA){
-			ndefcount++;
-		}else {
+		if(ndefcount > MAXDATA){
 			ndefcount = MAXDATA;
-			for(ADC_Value = 16 ; ADC_Value < 2*ndefcount ; ADC_Value+=2){
-							NFC_NDEF_Message[ADC_Value-2] = NFC_NDEF_Message[ADC_Value];
-							NFC_NDEF_Message[ADC_Value-1] = NFC_NDEF_Message[ADC_Value+1];
-
+			for( i = 14;i<= 14+ MAXDATA*DATAWIDTH- DATAWIDTH;i++){
+				NFC_NDEF_Message[i] = NFC_NDEF_Message[i+DATAWIDTH];
 			}
 		}
+
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Volts/100+48;
+		ADC_Volts %= 100;
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
+		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
+
+		NFC_NDEF_Message[5] = NLEN + ndefcount*DATAWIDTH;
+		NFC_NDEF_Message[8] = PLEN + ndefcount*DATAWIDTH;
 
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
@@ -112,10 +116,10 @@ __interrupt void TimerA1_ISR(void)
 	TA0CTL &= ~TAIFG;
 	secondCTR++;
 	if(secondCTR == INTERVAL){
-//		P1OUT ^= 0x10;
-//		__delay_cycles(400);
-//		P1OUT &= ~0x10;
-//		__delay_cycles(400000);
+		//		P1OUT ^= 0x10;
+		//		__delay_cycles(400);
+		//		P1OUT &= ~0x10;
+		//		__delay_cycles(400000);
 		secondCTR = 0;
 		SD14CTL0 |= SD14SC;
 	}

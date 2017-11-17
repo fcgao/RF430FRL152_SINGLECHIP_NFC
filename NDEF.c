@@ -45,12 +45,12 @@ u08_t NFC_NDEF_Message[104] = {
 
 		// Block 1
 		0x03,		// NDEF Message present
-		0x0c,		// Length , 22 bytes
+		NLEN,		// Length , 22 bytes
 		0xD1,		// Record header
 		0x01,		// type length
 
 		// Block 2
-		0x08,		// Payload length
+		PLEN,		// Payload length
 		0x54,		// Record Type text)
 		0x02, 		// SOT
 		0x65,		// 'e'
