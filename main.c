@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 240
+#define INTERVAL 60
 #define MAXDATA 80
 #define DATAWIDTH 3
 
@@ -55,7 +55,7 @@ void DeviceInit(void){
 	//	P1DIR &= ~0xEF;
 	//	P1REN = 0;
 	SD14CTL0 = SD14EN + SD14IE + SD14SGL + VIRTGND;
-	//SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor	pin 17
+//	SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor	pin 17
 	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor	pin 18
 }
 
@@ -91,6 +91,7 @@ __interrupt void SD_ADC_ISR(void)
 		ADC_Volts %= 100;
 		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
 		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
+
 
 		NFC_NDEF_Message[5] = NLEN + ndefcount*DATAWIDTH;
 		NFC_NDEF_Message[8] = PLEN + ndefcount*DATAWIDTH;
