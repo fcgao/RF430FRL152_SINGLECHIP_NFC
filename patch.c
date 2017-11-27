@@ -43,10 +43,10 @@ const u16_t START_KEY = DRIVER_TABLE_KEY;
 #pragma location = CUSTOM_COMMAND														// the location of the command ID
 const u16_t  CustomCommandID = USER_CUSTOM_COMMAND_ID;              					// the function identifier
 
-// Function address
-#pragma RETAIN(CustomCommandAddress);
-#pragma location = CUSTOM_COMMAND_ADDR														// the location of the address
-const DriverFunction CustomCommandAddress = (DriverFunction)&userCustomCommand;     	// the location the function is in
+//// Function address
+//#pragma RETAIN(CustomCommandAddress);
+//#pragma location = CUSTOM_COMMAND_ADDR														// the location of the address
+//const DriverFunction CustomCommandAddress = (DriverFunction)&userCustomCommand;     	// the location the function is in
 
 //First ID, address pair
 #pragma RETAIN(GetSystemInfoID);
@@ -266,37 +266,37 @@ void GetMultipleBlockSecurityStatus_Patched()
 * 07 - TI Manufacturer ID (need by this IC)
 * 01 - Set Error LED to on  (0x00 to be off)
 **************************************************************************************************************************************************/
-void userCustomCommand()
-{
-    u08_t control;
-
-    if( RF13MFIFOFL_L == CRC_LENGTH_IN_BUFFER + DATA_IN_LENGTH)         // CRC_LENGTH + 1 byte expected
-    {
-        control = RF13MRXF_L;  // pull one byte from the recieve FIFO
-
-        P1DIR |= BIT4; // set ALARM LED as an output
-
-        if (control)
-        {
-        	P1OUT |= BIT4;		// turn on ALARM LED
-        }
-        else
-        {
-        	P1OUT &= ~BIT4;  	// turn off ALARM LED
-        }
-
-        //Device has 32 byte RX FIFO and 32 byte TX FIFO, this includes the CRC bytes
-
-        //use RF13MRXF to receive two bytes
-        //use RF13MRXF_L to receive one byte
-        //to receive more than one byte simply continue to read the RF13MRXF_L register.
-        //The limit is 32 bytes, but in reality it is less due to protocol overhead
-       RF13MTXF_L = 0x0;      // no error, send out
-       //To transmit more than one byte repeatedly write data into RF13MTXF_L for each data byte/word and it will go into the FIFO to be transmitted
-    }
-    else
-    {
-       RF13MTXF_L = 0x1;    // an error response
-    }
-}
+//void userCustomCommand()
+//{
+//    u08_t control;
+//
+//    if( RF13MFIFOFL_L == CRC_LENGTH_IN_BUFFER + DATA_IN_LENGTH)         // CRC_LENGTH + 1 byte expected
+//    {
+//        control = RF13MRXF_L;  // pull one byte from the recieve FIFO
+//
+//        P1DIR |= BIT4; // set ALARM LED as an output
+//
+////        if (control)
+////        {
+////        	P1OUT |= BIT4;		// turn on ALARM LED
+////        }
+////        else
+////        {
+////        	P1OUT &= ~BIT4;  	// turn off ALARM LED
+////        }
+//
+//        //Device has 32 byte RX FIFO and 32 byte TX FIFO, this includes the CRC bytes
+//
+//        //use RF13MRXF to receive two bytes
+//        //use RF13MRXF_L to receive one byte
+//        //to receive more than one byte simply continue to read the RF13MRXF_L register.
+//        //The limit is 32 bytes, but in reality it is less due to protocol overhead
+//       RF13MTXF_L = 0x0;      // no error, send out
+//       //To transmit more than one byte repeatedly write data into RF13MTXF_L for each data byte/word and it will go into the FIFO to be transmitted
+//    }
+//    else
+//    {
+//       RF13MTXF_L = 0x1;    // an error response
+//    }
+//}
 

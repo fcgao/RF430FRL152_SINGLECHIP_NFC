@@ -27,7 +27,14 @@ inline u08_t givetens(u08_t num){
 }
 
 extern u08_t NFC_NDEF_Message[];
-unsigned char sec = 1;min=12,hr=14,mon=11,yr=17,day = 25;
+
+
+//#pragma RETAIN(UID_4);
+//#pragma location = 0x1A0C
+//const u08_t UID_4;
+
+
+unsigned char sec=0,min=59,hr=24,mon=12,yr=17,day = 30;
 
 
 void main(){
@@ -144,26 +151,26 @@ __interrupt void TimerA0_ISR(void)
 	TA0CTL &= ~TAIFG;
 	secondCTR++;
 	sec++;
-	if(sec == 60){
-		sec = 1;
+	if(sec > 59){
+		sec = 0;
 		min++;
-//		if(min == 60){
-//			min = 1;
-//			hr++;
-//			if(hr == 24){
-//				hr = 0;
-//				day++;
-//				if(day == 30){
-//					day = 1;
-//					mon++;
-//					if(mon>12){
-//						mon = 1;
-//						yr++;
-//					}
-//				}
-//			}
-//		}
-//
+		if(min > 59){
+			min = 0;
+			hr++;
+			if(hr > 24){
+				hr = 0;
+				day++;
+				if(day > 30){
+					day = 1;
+					mon++;
+					if(mon>12){
+						mon = 1;
+						yr++;
+					}
+				}
+			}
+		}
+
 	}
 	if(secondCTR == INTERVAL){
 		secondCTR = 0;
