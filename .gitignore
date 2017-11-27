@@ -7,6 +7,6 @@ target*/
 .ccsproject
 .cproject
 .project
-lnk_*
+Release/
 RF430CL330H_*/
 RF430CL331H_*/

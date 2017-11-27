@@ -57,8 +57,6 @@ u08_t NFC_NDEF_Message[104] = {
 
 		0x6E,		// 'n'
 
-		0x54,
-
 		0x03,		// end of text
 		0x00,		// Empty don't care
 };
