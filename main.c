@@ -3,12 +3,11 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 60
+#define INTERVAL 5
 #define MAXDATA 80
 #define DATAWIDTH 3
 
 #include <rf430frl152h.h>
-
 
 #pragma PERSISTENT (ndefcount)
 unsigned char ndefcount = 0;
@@ -73,7 +72,6 @@ __interrupt void SD_ADC_ISR(void)
 		unsigned int ADC_Value = 0;
 		volatile unsigned int i = 0;
 
-
 		SD14CTL0 &= ~SD14IFG;  //clear the data available interrupt
 		ADC_Value =  SD14MEM0; //Read the ADC Data		//sending the raw data to phone
 		ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
@@ -82,16 +80,15 @@ __interrupt void SD_ADC_ISR(void)
 
 		if(ndefcount > MAXDATA){
 			ndefcount = MAXDATA;
-			for( i = 14;i<= 14+ MAXDATA*DATAWIDTH- DATAWIDTH;i++){
+			for( i = NDEFSTART;i<= NDEFSTART+ MAXDATA*DATAWIDTH- DATAWIDTH;i++){
 				NFC_NDEF_Message[i] = NFC_NDEF_Message[i+DATAWIDTH];
 			}
 		}
 
-		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Volts/100+48;
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Volts/100+48;
 		ADC_Volts %= 100;
-		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
-		NFC_NDEF_Message[14-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
-
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
 
 		NFC_NDEF_Message[5] = NLEN + ndefcount*DATAWIDTH;
 		NFC_NDEF_Message[8] = PLEN + ndefcount*DATAWIDTH;
@@ -117,10 +114,6 @@ __interrupt void TimerA1_ISR(void)
 	TA0CTL &= ~TAIFG;
 	secondCTR++;
 	if(secondCTR == INTERVAL){
-		//		P1OUT ^= 0x10;
-		//		__delay_cycles(400);
-		//		P1OUT &= ~0x10;
-		//		__delay_cycles(400000);
 		secondCTR = 0;
 		SD14CTL0 |= SD14SC;
 	}
