@@ -56,8 +56,13 @@ u08_t NFC_NDEF_Message[104] = {
 		0x65,		// 'e'
 
 		0x6E,		// 'n'
+//13TH LOCATION
+		'7','5','4','2',
+		',',
+		'1','7','1','1','2','5',
+		'G','A','L','B','I','S','\n',
+//31TH LOCATION
 
-		0x54,
 
 		0x03,		// end of text
 		0x00,		// Empty don't care
