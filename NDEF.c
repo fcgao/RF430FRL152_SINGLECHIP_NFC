@@ -36,32 +36,42 @@ const u16_t PF[48];
 #pragma location = NDEF_START_ADDRESS
 
 
-u08_t NFC_NDEF_Message[104] = {
+u08_t NFC_NDEF_Message[404] = {
 		// Block 0
-		0xE1, 		// NDEF Magic Number
+		0xE1, 		// NDEF Magic Numberndef
 		0x40, 		// Version Number, read/write access conditions
 		0x79, 		//0x7E,		// 1008 bytes / 8 = 126 blocks
 		0x00,		//0x04,//8 byte extended memory //0x00,		// does not support read multiple blocks (limited to only 3 blocks)
 
 		// Block 1
 		0x03,		// NDEF Message present
-		NLEN,		// Length , 22 bytes
-		0xD1,		// Record header
+		NLEN,		// Length ,
+		//count for nlen starts from here
+
+		//block 2
+		0xC1,		// Record header
 		0x01,		// type length
 
-		// Block 2
+		0x00,
+		0x00,
+
+		// Block 3
+		0x00,
 		PLEN,		// Payload length
+
 		0x54,		// Record Type text)
+		//count for p len starts from here
 		0x02, 		// SOT
 		0x65,		// 'e'
 
 		0x6E,		// 'n'
-//13TH LOCATION
-		'7','5','4','2',
+//16TH LOCATION
+		'7','5','1','2',
 		',',
 		'1','7','1','1','2','5',
 		'G','A','L','B','I','S','\n',
-//31TH LOCATION
+//33TH LOCATION for interval
+		//34th location starts the log until end
 
 
 		0x03,		// end of text

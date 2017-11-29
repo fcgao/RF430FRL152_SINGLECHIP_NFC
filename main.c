@@ -3,8 +3,8 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 5
-#define MAXDATA 80
+#define INTERVAL 240
+#define MAXDATA 60
 #define DATAWIDTH 3
 
 #include <rf430frl152h.h>
@@ -56,8 +56,8 @@ void DeviceInit(void){
 	//	P1DIR &= ~0xEF;
 	//	P1REN = 0;
 	SD14CTL0 = SD14EN + SD14IE + SD14SGL + VIRTGND;
-//	SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor	pin 17
-	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor	pin 18
+	SD14CTL1 = SD14UNI + SD14INCH_3 +  SD14RBEN0;	//ref resistor	pin 17
+//	SD14CTL1 = SD14UNI + SD14INCH_2 +  SD14RBEN1;	// thermistor	pin 18
 }
 
 
@@ -88,14 +88,14 @@ __interrupt void SD_ADC_ISR(void)
 			}
 		}
 
+		//NFC_NDEF_Message[NDEFSTART-1] = secondCTR;
 		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Volts/100+48;
 		ADC_Volts %= 100;
 		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
 		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
 
-
-		NFC_NDEF_Message[5] = NLEN + ndefcount*DATAWIDTH;
-		NFC_NDEF_Message[8] = PLEN + ndefcount*DATAWIDTH;
+		NFC_NDEF_Message[NLENPOS] = NLEN + ndefcount*DATAWIDTH;
+		NFC_NDEF_Message[PLENPOS] = PLEN + ndefcount*DATAWIDTH;
 
 		__bic_SR_register_on_exit(LPM3_bits);
 		break;}
