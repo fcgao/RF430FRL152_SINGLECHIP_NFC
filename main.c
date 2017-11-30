@@ -46,7 +46,7 @@ void main(){
 	initISO15693(CLEAR_BLOCK_LOCKS); 			// clear all block locks
 	DeviceInit();
 
-	initTimer();
+	//initTimer();
 
 	while(1)	{
 		__bis_SR_register(LPM3_bits + GIE);
