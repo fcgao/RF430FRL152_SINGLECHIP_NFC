@@ -70,8 +70,8 @@ u08_t NFC_NDEF_Message[404] = {
 		',',
 		'1','7','1','1','2','5',
 		'G','A','L','B','I','S','\n',
-//33TH LOCATION for interval
-		//34th location starts the log until end
+//34TH LOCATION for interval
+		//35th location starts the log until end
 
 
 		0x03,		// end of text

@@ -18,7 +18,7 @@ extern u08_t DS;
 #define NLENPOS 5
 #define PLENPOS 11
 #define PLEN 0x15
-#define NDEFSTART 34
+#define NDEFSTART 35
 
 #define ROM_EUSCI_SUPPORT_ENABLED       BIT2
 #define EROM_EUSCI_SUPPORT_DISABLED     0
