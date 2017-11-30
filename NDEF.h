@@ -14,10 +14,10 @@ extern u08_t DS;
 #define FRAM_LOCK_BLOCK_AREA_SIZE  						38
 #define FRAM_LOCK_BLOCKS								0xF840  //Address of ISO15693 lock blocks
 
-#define NLEN 0x1C
+#define NLEN 0x1D
 #define NLENPOS 5
 #define PLENPOS 11
-#define PLEN 0x15
+#define PLEN 0x16
 #define NDEFSTART 35
 
 #define ROM_EUSCI_SUPPORT_ENABLED       BIT2
