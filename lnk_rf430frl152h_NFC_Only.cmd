@@ -72,12 +72,6 @@ MEMORY
 	FRAM_NDEF               : origin = 0xF868, length = 0x0194 // ends at 0xF9FB - NDEF memory section
     FRAM_CODE               : origin = 0xF9FC, length = 0x05D2 // ends at 0xFFCF - Firmware memory section
 =======
-	// this line is 200bytes longer ndef memory than above
-	FRAM_NDEF               : origin = 0xF868, length = 0x0130 // ends at 0xF997 - NDEF memory section
-    FRAM_CODE               : origin = 0xF998, length = 0x0636 // ends at 0xFFCF - Firmware memory section
-
-  //  FRAM_NDEF               : origin = 0xF868, length = 0x025C // ends at 0xFAC3 - NDEF memory section
-   // FRAM_CODE               : origin = 0xFAC4, length = 0x050C // ends at 0xFFCF - Firmware memory section
 >>>>>>> master
    
     JTAGSIGNATURE           : origin = 0xFFD0, length = 0x0004, fill = 0xFFFF

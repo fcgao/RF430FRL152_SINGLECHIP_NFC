@@ -39,7 +39,6 @@ const u16_t PF[48];
 <<<<<<< HEAD
 u08_t NFC_NDEF_Message[404] = {
 =======
-u08_t NFC_NDEF_Message[304] = {
 >>>>>>> master
 		// Block 0
 		0xE1, 		// NDEF Magic Numberndef

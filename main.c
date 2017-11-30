@@ -13,7 +13,7 @@
 /////////this code is merged to master after finishing////////////////////////////////////
 //////////sends out three analog digits /////////////////////////////////////////////////
 =======
-#define INTERVAL 5
+#define INTERVAL 240
 #define MAXDATA 80
 #define DATAWIDTH 3
 
