@@ -36,7 +36,11 @@ const u16_t PF[48];
 #pragma location = NDEF_START_ADDRESS
 
 
+<<<<<<< HEAD
 u08_t NFC_NDEF_Message[404] = {
+=======
+u08_t NFC_NDEF_Message[304] = {
+>>>>>>> master
 		// Block 0
 		0xE1, 		// NDEF Magic Numberndef
 		0x40, 		// Version Number, read/write access conditions
