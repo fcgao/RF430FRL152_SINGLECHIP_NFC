@@ -3,8 +3,7 @@
 #include "patch.h"
 #include "timer.h"
 
-<<<<<<< HEAD
-#define INTERVAL 240
+#define INTERVAL 5
 #define MAXDATA 60
 #define DATAWIDTH 3
 
@@ -12,14 +11,9 @@
 /////////this code is for the thermistor change the pin with comment below/////////////////
 /////////this code is merged to master after finishing////////////////////////////////////
 //////////sends out three analog digits /////////////////////////////////////////////////
-=======
-#define INTERVAL 240
-#define MAXDATA 80
-#define DATAWIDTH 3
 
 #include <rf430frl152h.h>
 
->>>>>>> master
 #pragma PERSISTENT (ndefcount)
 unsigned char ndefcount = 0;
 
@@ -85,7 +79,7 @@ __interrupt void SD_ADC_ISR(void)
 
 		SD14CTL0 &= ~SD14IFG;  //clear the data available interrupt
 		ADC_Value =  SD14MEM0; //Read the ADC Data		//sending the raw data to phone
-		ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
+		//ADC_Volts = ((ADC_Value >> 7) * 900)/(16383 >> 8);
 
 		ndefcount++;
 
@@ -96,14 +90,9 @@ __interrupt void SD_ADC_ISR(void)
 			}
 		}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
-		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Volts/100+48;
-		ADC_Volts %= 100;
-		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Volts/10+48;
-		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+2] = ADC_Volts%10+48;
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount] = ADC_Value;
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+1] = ADC_Value>>8;
+		NFC_NDEF_Message[NDEFSTART-DATAWIDTH+DATAWIDTH*ndefcount+2] = ',';
 
 		NFC_NDEF_Message[NLENPOS] = NLEN + ndefcount*DATAWIDTH;
 		NFC_NDEF_Message[PLENPOS] = PLEN + ndefcount*DATAWIDTH;
