@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "timer.h"
 
-#define INTERVAL 150   //this code has double effect 240 means 8 minutes
+#define INTERVAL 1800   //this code has double effect 240 means 8 minutes
 #define MAXDATA 60
 #define DATAWIDTH 3
 
@@ -23,7 +23,8 @@ unsigned char ndefcount = 0;
 
 void DeviceInit(void);
 
-unsigned char secondCTR = 0;    //now this counts 2 secs
+//unsigned char secondCTR = 0;    //now this counts 2 secs
+unsigned int secondCTR = 0;
 
 extern u08_t NFC_NDEF_Message[];
 
@@ -37,7 +38,8 @@ void main(){
     DeviceInit();
     initTimer();\
 
-    NFC_NDEF_Message[NDEFSTART-1] = INTERVAL;
+    NFC_NDEF_Message[NDEFSTART-2] = (char)INTERVAL;
+    NFC_NDEF_Message[NDEFSTART-1] = (char)INTERVAL>>8;
 
     while(1)    {
         __bis_SR_register(LPM3_bits + GIE);
